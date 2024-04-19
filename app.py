@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import glob
 
+@st.cache
 def load_data(folder_path):
     year = os.path.basename(folder_path)
     total_sold_file = os.path.join(folder_path, f"{year}-Total-Sold.csv")
@@ -27,6 +28,7 @@ def load_data(folder_path):
 
     return merged_data, top_reasons
 
+@st.cache
 def load_yearly_data():
     all_data = {}
     reasons_data = {}
@@ -54,5 +56,5 @@ def main():
     st.dataframe(reasons_data[year], hide_index=True)
 
 if __name__ == "__main__":
+    
     main()
-
