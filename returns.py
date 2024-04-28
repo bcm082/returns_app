@@ -85,7 +85,7 @@ def main():
     st.sidebar.title("Year Selection")
     year = st.sidebar.selectbox('Select Year', [2023, 2024])
 
-    st.title('Customer Returns Dashboard')
+    st.title('Customer Returns Data')
     merged_data, top_reasons, returns_comparison_data, year_comparison_data = load_data(year)  # Load data for selected year
     
     with st.expander("SKU Details"):
