@@ -32,14 +32,27 @@ def load_data(year):
     # Load returns data for comparison across all years
     all_returns_data = pd.read_csv(returns_file)
     all_returns_data['Quantity_Returned'] = pd.to_numeric(all_returns_data['Quantity'], errors='coerce')  # Ensure column is numeric
-
     # Construct a pivot table with the correct months
     all_returns_data['Month'] = pd.Categorical(all_returns_data['Month'], categories=[
         'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
         'September', 'October', 'November', 'December'], ordered=True)
     returns_comparison_data = all_returns_data.pivot_table(values='Quantity_Returned', index='Month', columns='Year', aggfunc='sum').fillna(0)
 
-    return merged_data, top_reasons, returns_comparison_data
+    # Calculate total sales and total returns for comparison across years
+    all_sold = pd.read_csv(total_sold_file)
+    all_sold['Total_Sold'] = pd.to_numeric(all_sold['Quantity'].str.replace(',', ''), errors='coerce')
+    total_sales_by_year = all_sold.groupby('Year')['Total_Sold'].sum()
+
+    all_returns = pd.read_csv(returns_file)
+    all_returns['Quantity_Returned'] = pd.to_numeric(all_returns['Quantity'], errors='coerce')
+    total_returns_by_year = all_returns.groupby('Year')['Quantity_Returned'].sum()
+
+    year_comparison_data = pd.DataFrame({
+        'Total Sales': total_sales_by_year,
+        'Total Returns': total_returns_by_year
+    })
+
+    return merged_data, top_reasons, returns_comparison_data, year_comparison_data
 
 
 def plot_comparison_graphs(data, year):
@@ -62,13 +75,18 @@ def plot_comparison_graphs(data, year):
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.write(f"No return data available for the year {year}.")
-        
+
+def plot_sales_vs_returns(data):
+    fig = px.bar(data, barmode='group', title="Total Sales vs Total Returns Comparison")
+    st.plotly_chart(fig, use_container_width=True)
+
+
 def main():
     st.sidebar.title("Year Selection")
     year = st.sidebar.selectbox('Select Year', [2023, 2024])
 
     st.title('Customer Returns Dashboard')
-    merged_data, top_reasons, returns_comparison_data = load_data(year)  # Load data for selected year
+    merged_data, top_reasons, returns_comparison_data, year_comparison_data = load_data(year)  # Load data for selected year
     
     with st.expander("SKU Details"):
         if merged_data.empty:
@@ -81,6 +99,8 @@ def main():
 
     with st.expander("Data Analysis"):
         plot_comparison_graphs(returns_comparison_data, year)
+        plot_sales_vs_returns(year_comparison_data)
 
 if __name__ == "__main__":
     main()
+
