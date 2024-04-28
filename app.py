@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import plotly.express as px
 
 @st.cache_resource
 def load_data(year):
@@ -47,29 +48,21 @@ def plot_comparison_graphs(data, year):
         previous_year = year - 1
         previous_year_data = data.get(previous_year, pd.Series())
 
-        # Define month labels as they appear in the DataFrame
-        month_labels = ['January', 'February', 'March', 'April', 'May', 'June', 
-                        'July', 'August', 'September', 'October', 'November', 'December']
-        
-        fig, ax = plt.subplots(figsize=(12, 6))
-        # Plot current year data
-        current_year_data.plot(kind='bar', ax=ax, color='b', position=0, width=0.4, label=f'Returns {year}')
-        # Plot previous year data if it exists
+        df = current_year_data.reset_index()
+        df.columns = ['Month', 'Returns']
+        df['Year'] = year
         if not previous_year_data.empty:
-            previous_year_data.plot(kind='bar', ax=ax, color='r', position=1, width=0.4, label=f'Returns {previous_year}')
+            prev_df = previous_year_data.reset_index()
+            prev_df.columns = ['Month', 'Returns']
+            prev_df['Year'] = previous_year
+            df = pd.concat([df, prev_df])
 
-        ax.set_title('Month-over-Month Returns Comparison')
-        ax.set_xlabel('Month')
-        ax.set_ylabel('Quantity Returned')
-        ax.set_xticklabels(month_labels, rotation=45)  # Rotate labels for better visibility
-        ax.legend()
-        st.pyplot(fig)
+        fig = px.line(df, x='Month', y='Returns', color='Year', markers=True,
+                      title='Month-over-Month Returns Comparison')
+        st.plotly_chart(fig, use_container_width=True)
     else:
         st.write(f"No return data available for the year {year}.")
-
-
-
-
+        
 def main():
     st.sidebar.title("Year Selection")
     year = st.sidebar.selectbox('Select Year', [2023, 2024])
@@ -81,12 +74,12 @@ def main():
         if merged_data.empty:
             st.write("No data available for the selected year.")
         else:
-            st.dataframe(merged_data)
+            st.dataframe(merged_data, hide_index=True)
     
     with st.expander("Top Reasons for Returns"):
-        st.dataframe(top_reasons)
+        st.dataframe(top_reasons, hide_index=True)
 
-    with st.expander("Returns Comparison"):
+    with st.expander("Data Analysis"):
         plot_comparison_graphs(returns_comparison_data, year)
 
 if __name__ == "__main__":
