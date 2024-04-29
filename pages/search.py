@@ -51,29 +51,29 @@ if search_query:
     reasons_2023 = top_reasons(2023)
     reasons_2024 = top_reasons(2024)
 
-    with st.expander("2024 Data"):
+    with st.expander("2024 Data", expanded=True):
         if not results_2024.empty:
             st.write("### 2024 Sales and Returns Data")
-            st.dataframe(results_2024)
+            st.dataframe(results_2024, hide_index=True)
         else:
             st.write("### No sales and returns data found for 2024.")
 
         if not reasons_2024.empty:
             st.write("### Top 5 Reasons for Returns in 2024")
-            st.dataframe(reasons_2024)
+            st.dataframe(reasons_2024, hide_index=True)
         else:
             st.write("### No returns data found for 2024.")
 
-    with st.expander("2023 Data"):
+    with st.expander("2023 Data", expanded=True):
         if not results_2023.empty:
             st.write("### 2023 Sales and Returns Data")
-            st.dataframe(results_2023)
+            st.dataframe(results_2023, hide_index=True)
         else:
             st.write("### No sales and returns data found for 2023.")
         
         if not reasons_2023.empty:
             st.write("### Top 5 Reasons for Returns in 2023")
-            st.dataframe(reasons_2023)
+            st.dataframe(reasons_2023, hide_index=True)
         else:
             st.write("### No returns data found for 2023.")
 
