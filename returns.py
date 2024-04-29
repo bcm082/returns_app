@@ -88,16 +88,16 @@ def main():
     st.title('Customer Returns Data')
     merged_data, top_reasons, returns_comparison_data, year_comparison_data = load_data(year)  # Load data for selected year
     
-    with st.expander("SKU Details"):
+    with st.expander("SKU Details", expanded=True):
         if merged_data.empty:
             st.write("No data available for the selected year.")
         else:
             st.dataframe(merged_data, hide_index=True)
     
-    with st.expander("Top Reasons for Returns"):
+    with st.expander("Top Reasons for Returns", expanded=True):
         st.dataframe(top_reasons, hide_index=True)
 
-    with st.expander("Data Analysis"):
+    with st.expander("Data Analysis", expanded=True):
         plot_comparison_graphs(returns_comparison_data, year)
         plot_sales_vs_returns(year_comparison_data)
 
