@@ -76,4 +76,3 @@ if search_query:
             st.dataframe(reasons_2023, hide_index=True)
         else:
             st.write("### No returns data found for 2023.")
-
